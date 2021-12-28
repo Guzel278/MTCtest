@@ -10,15 +10,15 @@ namespace MTCtest
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             Console.WriteLine("input string id:");
             string id = Console.ReadLine();
             Console.WriteLine("input string name:");
             string name = Console.ReadLine();
             Console.WriteLine("input path:");
-            string path = Console.ReadLine();          
-            var response = PostRequest(id, name);
+            string path = Console.ReadLine();
+            var response = await PostRequest(id, name);
 
             using (StreamWriter file = File.CreateText(path))
             {
@@ -30,7 +30,6 @@ namespace MTCtest
         static async Task<string> PostRequest(string id, string name)
         {
             var client = new HttpClient();
-
             var postRequest = new HttpRequestMessage
             {
                 RequestUri = new Uri("https://httpbin.org/anything"),
@@ -41,7 +40,7 @@ namespace MTCtest
                     Name = name
                 }), Encoding.UTF8, "application/json")
             };
-            var postResponse = client.Send(postRequest);
+            var postResponse = await client.SendAsync(postRequest);
             var result = new { ResultCode = postResponse.StatusCode, Content = await postResponse.Content.ReadAsStringAsync() };
             return JsonConvert.SerializeObject(result);
         }
